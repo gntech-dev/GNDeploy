@@ -1,0 +1,31 @@
+name: Validate module
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Windows PowerShell 5.1 tests
+        shell: powershell
+        run: |
+          Get-ChildItem tests/Test-*.ps1 | ForEach-Object {
+            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $_.FullName
+            if ($LASTEXITCODE) { throw "Failed: $($_.Name)" }
+          }
+      - name: Build package
+        shell: powershell
+        run: ./scripts/Build-Distribution.ps1 -OutputRoot "$env:RUNNER_TEMP/GNDeploy-Distribution"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: GNDeploy-module
+          path: |
+            ${{ runner.temp }}/GNDeploy-Distribution/GNDeploy-*.zip
+            ${{ runner.temp }}/GNDeploy-Distribution/SHA256SUMS.txt
+            ${{ runner.temp }}/GNDeploy-Distribution/Install-GNDeploy.ps1
+          if-no-files-found: error

@@ -1,0 +1,14 @@
+dist/
+*.iso
+*.wim
+*.esd
+*.vhd*
+*.exe
+*.zip
+*.log
+__pycache__/
+*.pyc
+.env
+Autopilot/
+Images/
+Drivers/

@@ -1,0 +1,32 @@
+name: Release module
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Validate tag and test
+        shell: powershell
+        run: |
+          $version=(Import-PowerShellDataFile ./src/GNDeploy/GNDeploy.psd1).ModuleVersion
+          if ($env:GITHUB_REF_NAME -ne "v$version") { throw 'Tag/version mismatch' }
+          Get-ChildItem tests/Test-*.ps1 | ForEach-Object {
+            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $_.FullName
+            if ($LASTEXITCODE) { throw "Failed: $($_.Name)" }
+          }
+      - name: Package
+        shell: powershell
+        run: ./scripts/Build-Distribution.ps1 -OutputRoot "$env:RUNNER_TEMP/GNDeploy-Distribution"
+      - name: Publish experimental release
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $root="$env:RUNNER_TEMP/GNDeploy-Distribution"
+          $version=(Import-PowerShellDataFile ./src/GNDeploy/GNDeploy.psd1).ModuleVersion
+          gh release create $env:GITHUB_REF_NAME "$root/GNDeploy-$version.zip" "$root/SHA256SUMS.txt" "$root/Install-GNDeploy.ps1" --prerelease --title "GNDeploy $version (experimental)" --notes-file CHANGELOG.md
+          if ($LASTEXITCODE) { throw 'GitHub release failed' }

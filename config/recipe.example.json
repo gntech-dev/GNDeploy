@@ -1,0 +1,8 @@
+{
+  "SchemaVersion": 1,
+  "Name": "Windows11-Lab",
+  "SourceImage": "C:\\Images\\install.wim",
+  "SourceIndex": 1,
+  "Packages": [],
+  "Drivers": []
+}
