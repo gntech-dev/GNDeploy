@@ -66,7 +66,8 @@ try {
     Assert-Throws { Save-GNDownload -Uri 'http://example.com/image.esd' -Destination "$testRoot\image.esd" } 'Descarga HTTP bloqueada antes de red'
     'cached' | Set-Content "$testRoot\cache.esd"
     $hash=(Get-FileHash "$testRoot\cache.esd").Hash
-    Assert ((Save-GNDownload -Uri 'https://example.invalid/file' -Destination "$testRoot\cache.esd" -Sha256 $hash) -eq "$testRoot\cache.esd") 'Cache valida no necesita red'
+    $cached=Save-GNDownload -Uri 'https://example.invalid/file' -Destination "$testRoot\cache.esd" -Sha256 $hash
+    Assert ((Test-Path -LiteralPath $cached -PathType Leaf) -and (Get-FileHash -LiteralPath $cached).Hash -eq $hash) 'Cache valida no necesita red'
     Assert-Throws { Save-GNDownload -Uri 'https://example.invalid/file' -Destination "$testRoot\cache.esd" -Sha256 ('b'*64) } 'Cache corrupta no se reutiliza'
     # Destructive entry point must refuse to execute on a normal Windows host.
     if (-not (Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Control\MiniNT')) {
