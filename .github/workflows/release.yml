@@ -28,5 +28,10 @@ jobs:
         run: |
           $root="$env:RUNNER_TEMP/GNDeploy-Distribution"
           $version=(Import-PowerShellDataFile ./src/GNDeploy/GNDeploy.psd1).ModuleVersion
-          gh release create $env:GITHUB_REF_NAME "$root/GNDeploy-$version.zip" "$root/SHA256SUMS.txt" "$root/Install-GNDeploy.ps1" --prerelease --title "GNDeploy $version (experimental)" --notes-file CHANGELOG.md
+          gh release view $env:GITHUB_REF_NAME *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $env:GITHUB_REF_NAME "$root/GNDeploy-$version.zip" "$root/SHA256SUMS.txt" "$root/Install-GNDeploy.ps1"
+          } else {
+            gh release create $env:GITHUB_REF_NAME "$root/GNDeploy-$version.zip" "$root/SHA256SUMS.txt" "$root/Install-GNDeploy.ps1" --prerelease --title "GNDeploy $version (experimental)" --notes-file CHANGELOG.md
+          }
           if ($LASTEXITCODE) { throw 'GitHub release failed' }

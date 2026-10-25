@@ -6,9 +6,14 @@ function Check($ok,$message){if(-not $ok){throw $message};Write-Host "PASS $mess
 $build=& "$source\scripts\Build-Distribution.ps1" -OutputRoot "$root\Build"
 Check (Test-Path $build.PackagePath) 'ZIP de modulo generado'
 $installed=& "$source\Install-GNDeploy.ps1" -PackagePath $build.PackagePath -ExpectedSha256 $build.SHA256 -Destination "$root\Modules"
+$markerName='module-identity-'+[guid]::NewGuid().ToString('N')+'.txt'
+$marker=Join-Path (Split-Path $installed.ModulePath) $markerName
+[IO.File]::WriteAllText($marker,$markerName)
 Import-Module $installed.ModulePath -Force
 $v=Get-GNDeployVersion
-Check ($v.Version -eq '0.2.0' -and $v.ModuleRoot -like "$root*") 'Modulo importado desde instalacion aislada'
+$loadedMarker=Join-Path $v.ModuleRoot $markerName
+Check ($v.Version -eq '0.2.0' -and (Test-Path -LiteralPath $loadedMarker) -and [IO.File]::ReadAllText($loadedMarker) -eq $markerName) 'Modulo importado desde instalacion aislada'
+Remove-Item -LiteralPath $marker
 Check (Test-Path "$($v.ProjectRoot)\src\Start-GNDeployGui.ps1") 'GUI y scripts de construccion incluidos'
 $workspace=New-GNDeployWorkspace -Path "$root\Workspace"
 Check ((Test-Path "$($workspace.Path)\Autopilot\Profiles") -and @(Get-ChildItem $workspace.Catalogs -File).Count -gt 0) 'Workspace con carpetas y catalogos'
