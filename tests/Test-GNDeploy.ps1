@@ -17,7 +17,7 @@ try {
         $parseErrors+=@($errors)
     }
     Assert ($parseErrors.Count -eq 0) 'Todos los scripts tienen sintaxis valida'
-    Assert ((Test-ModuleManifest "$repo\src\GNDeploy\GNDeploy.psd1").Version -eq [version]'0.2.0') 'Manifiesto importable'
+    Assert ((Test-ModuleManifest "$repo\src\GNDeploy\GNDeploy.psd1").Version -eq [version]'0.2.1') 'Manifiesto importable'
     $shellIni=Get-Content "$repo\config\winpeshl.ini" -Raw
     Assert ($shellIni -match '\[LaunchApps\]' -and $shellIni -notmatch 'CommandLine\s*=') 'Winpeshl usa seccion que admite argumentos de inicio'
     Assert ($shellIni -match 'powershell\.exe,.*-STA.*-WindowStyle Hidden.*Start-GNDeploy\.ps1' -and $shellIni -notmatch 'cmd\.exe') 'Winpeshl inicia la interfaz directamente sin consola principal que se pueda cerrar'
@@ -152,3 +152,4 @@ try {
     $parent=[IO.Path]::GetFullPath($env:TEMP).TrimEnd('\')+'\'
     if ($resolved.StartsWith($parent,[StringComparison]::OrdinalIgnoreCase) -and (Split-Path $resolved -Leaf) -like 'GNDeploy-Tests-*') { Remove-Item -LiteralPath $resolved -Recurse -Force }
 }
+

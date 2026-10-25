@@ -9,7 +9,7 @@ Windows x64 y Windows PowerShell 5.1. La GUI usa Windows Forms y un proceso STA.
 Descargue el ZIP de modulo, SHA256SUMS.txt e Install-GNDeploy.ps1 desde una release. Conserve el hash. Use el modo `-PackagePath` y `-ExpectedSha256` para instalar sin red. El paquete contiene codigo y catalogos; no incluye Windows ni drivers.
 
 ```powershell
-$install = & .\Install-GNDeploy.ps1 -PackagePath .\GNDeploy-0.2.0.zip -ExpectedSha256 '<hash publicado>'
+$install = & .\Install-GNDeploy.ps1 -PackagePath .\GNDeploy-0.2.1.zip -ExpectedSha256 '<hash publicado>'
 Import-Module $install.ModulePath
 $workspace = New-GNDeployWorkspace -Path C:\GNDeploy
 Get-Command -Module GNDeploy
@@ -43,6 +43,7 @@ La receta de ejemplo debe adaptarse a su imagen. Los paquetes requieren hashes y
 
 El repositorio contiene una seleccion explicita de fuentes. No deben agregarse logs del laboratorio, perfiles reales, secretos, imagenes Windows ni binarios de terceros. Build-Distribution genera una carpeta Repository publicable y un ZIP instalable a partir de una lista permitida.
 
-CI ejecuta las pruebas en Windows PowerShell 5.1 y genera artefactos. Un tag `v0.2.0` debe coincidir con ModuleVersion 0.2.0. El workflow de release crea una prerelease publica con ZIP, checksums e instalador; no publica ISO ni ejecuta pruebas destructivas.
+CI ejecuta las pruebas en Windows PowerShell 5.1 y genera artefactos. Un tag `v0.2.1` debe coincidir con ModuleVersion 0.2.1. El workflow de release crea una prerelease publica con ZIP, checksums e instalador; no publica ISO ni ejecuta pruebas destructivas.
 
 Para proponer cambios, abra un issue o pull request con el problema, comportamiento esperado y comprobaciones realizadas. No adjunte contrasenas, perfiles reales ni identificadores privados del tenant. El codigo aportado se distribuye bajo GPL-3.0-only.
+

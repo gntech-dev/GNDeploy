@@ -3,7 +3,7 @@
 [CmdletBinding(DefaultParameterSetName='GitHub')]
 param(
     [Parameter(ParameterSetName='GitHub')][ValidatePattern('^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$')][string]$Repository='gntech-dev/GNDeploy',
-    [Parameter(ParameterSetName='GitHub')][ValidatePattern('^v\d+\.\d+\.\d+$')][string]$Tag='v0.2.0',
+    [Parameter(ParameterSetName='GitHub')][ValidatePattern('^v\d+\.\d+\.\d+$')][string]$Tag='v0.2.1',
     [Parameter(Mandatory,ParameterSetName='Local')][string]$PackagePath,
     [Parameter(Mandatory,ParameterSetName='Local')][ValidatePattern('^[A-Fa-f0-9]{64}$')][string]$ExpectedSha256,
     [string]$Destination=(Join-Path $env:LOCALAPPDATA 'GNDeploy\Modules')
@@ -20,8 +20,10 @@ if($PSCmdlet.ParameterSetName -eq 'GitHub'){
     $base="https://github.com/$Repository/releases/download/$Tag"
     $name="GNDeploy-$version.zip"
     $PackagePath=Join-Path $work $name
-    Invoke-WebRequest -UseBasicParsing -Uri "$base/$name" -OutFile $PackagePath
-    $checksums=(Invoke-WebRequest -UseBasicParsing -Uri "$base/SHA256SUMS.txt").Content
+    Invoke-WebRequest -UseBasicParsing -TimeoutSec 120 -Uri "$base/$name" -OutFile $PackagePath
+    $checksumPath=Join-Path $work 'SHA256SUMS.txt'
+    Invoke-WebRequest -UseBasicParsing -TimeoutSec 30 -Uri "$base/SHA256SUMS.txt" -OutFile $checksumPath
+    $checksums=[IO.File]::ReadAllText($checksumPath)
     $line=@($checksums -split '\r?\n' | Where-Object {$_ -match ('^[a-fA-F0-9]{64}\s+\*?'+[regex]::Escape($name)+'$')})
     if($line.Count -ne 1){throw 'No se encontro una suma SHA-256 unica para el paquete.'}
     $ExpectedSha256=($line[0] -split '\s+')[0]
@@ -58,3 +60,4 @@ if(Test-Path -LiteralPath $moduleRoot){
 $modulePath=Join-Path $moduleRoot 'GNDeploy.psd1'
 $env:PSModulePath=$destinationRoot+';'+$env:PSModulePath
 [pscustomobject]@{Version=$packageVersion;ModulePath=$modulePath;ModuleSearchPath=$destinationRoot;PackageSHA256=$ExpectedSha256;Note='Import-Module con ModulePath; no se modifico el perfil ni se instalaron dependencias.'}
+

@@ -9,7 +9,7 @@ Modulo PowerShell independiente para preparar medios WinPE/WinRE y desplegar Win
 En Windows PowerShell 5.1 x64, descargue `Install-GNDeploy.ps1` de una release de este repositorio, revise el archivo y ejecutelo:
 
 ```powershell
-$install = & .\Install-GNDeploy.ps1 -Repository gntech-dev/GNDeploy -Tag v0.2.0
+$install = & .\Install-GNDeploy.ps1 -Repository gntech-dev/GNDeploy -Tag v0.2.1
 Import-Module $install.ModulePath
 Get-GNDeployVersion
 Start-GNDeploy -Preview
@@ -20,7 +20,7 @@ El instalador usa `%LOCALAPPDATA%\GNDeploy\Modules`, verifica SHA-256 y conserva
 Tambien puede instalar un ZIP descargado manualmente usando su hash publicado:
 
 ```powershell
-$install = & .\Install-GNDeploy.ps1 -PackagePath .\GNDeploy-0.2.0.zip -ExpectedSha256 '<SHA256 de SHA256SUMS.txt>'
+$install = & .\Install-GNDeploy.ps1 -PackagePath .\GNDeploy-0.2.1.zip -ExpectedSha256 '<SHA256 de SHA256SUMS.txt>'
 Import-Module $install.ModulePath
 ```
 
@@ -58,7 +58,8 @@ Documentacion: [Instalacion y desarrollo](docs/USAGE.md), [Guia de uso](docs/GUI
 
 ```powershell
 Get-ChildItem .\tests\Test-*.ps1 | ForEach-Object { & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $_.FullName; if ($LASTEXITCODE) { throw $_.Name } }
-.\scripts\Build-Distribution.ps1 -OutputRoot C:\GNDeploy-Releases\0.2.0
+.\scripts\Build-Distribution.ps1 -OutputRoot C:\GNDeploy-Releases\0.2.1
 ```
 
 Las releases distribuyen el modulo ZIP y `SHA256SUMS.txt`. Las pruebas CI no instalan Windows ni modifican discos fisicos. No hay publicacion en PowerShell Gallery todavia: `Install-Module GNDeploy` no se presenta como un metodo disponible.
+

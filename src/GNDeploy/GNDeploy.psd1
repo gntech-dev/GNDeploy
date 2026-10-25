@@ -1,6 +1,6 @@
 @{
     RootModule = 'GNDeploy.psm1'
-    ModuleVersion = '0.2.0'
+    ModuleVersion = '0.2.1'
     GUID = '34b03eb9-adb4-4d73-8888-164f676a6042'
     Author = 'GNTECH'
     Description = 'Motor independiente de despliegue Windows para laboratorio WinPE/WinRE.'
@@ -12,6 +12,7 @@
     VariablesToExport = @()
     PrivateData = @{PSData=@{Tags=@('Windows','Deployment','WinPE','Autopilot');LicenseUri='https://www.gnu.org/licenses/gpl-3.0.html';ReleaseNotes='Public module distribution based on r12; experimental, physical validation pending.'}}
 }
+
 
 
 
